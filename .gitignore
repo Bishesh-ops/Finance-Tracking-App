@@ -1,0 +1,15 @@
+# finance_tracker_backend/.gitignore
+
+# Python virtual environment
+venv/
+
+# Environment variables file (contains sensitive data)
+.env
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pytest_cache/
+.mypy_cache/
+.pytest_cache/
+.vscode/ # Optional, if you use VS Code and want to ignore its settings
