@@ -51,3 +51,33 @@ class Category(CategoryBase):
 
     class Config:
         from_attributes = True
+        
+    class TransactionBase(BaseModel):
+        ammount: float
+        type: str
+        description: Optional[str] = None
+        date: Optional[datetime] = None
+        
+        
+    class TransactionCreate(TransactionBase):
+        account_id: int
+        category_id: int
+        
+    class TransactiionUpdate(BaseModel):
+        ammount: Optional[float] = None
+        type: Optional[str] = None
+        description: Optional[str] = None
+        date: Optional[datetime] = None
+        account_id: Optional[int] = None
+        category_id: Optional[int] = None
+        
+    class Transaction(TransactionBase):
+        id: int
+        user_id: int
+        account_id: int
+        category_id: int
+        
+        class Config:
+            from_attributes = True
+        
+        
