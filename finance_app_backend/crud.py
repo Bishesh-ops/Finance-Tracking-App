@@ -122,20 +122,23 @@ def _adjust_account_balance(db: Session, account_id: int, amount: float, transac
         db.add(account)
         db.commit()
         db.refresh(account)
-        return account 
-    
+        return account
+
 def create_user_transaction(db: Session, transaction: schemas.TransactionCreate, user_id: int):
+    # Create the transaction ORM model instance
     db_transaction = models.Transaction(
-        **transaction.model_dump(exclude={"account_id", "category_id"}), 
+        **transaction.model_dump(exclude={"account_id", "category_id"}),
         user_id=user_id,
         account_id=transaction.account_id,
         category_id=transaction.category_id
     )
     db.add(db_transaction)
-    db.flush()
-    
+    db.flush() # Flush to get the transaction ID and make it available for balance adjustment before final commit
+
+    # Adjust the associated account's balance
     _adjust_account_balance(db, db_transaction.account_id, db_transaction.amount, db_transaction.type)
-    db.commit()
+
+    db.commit() # Final commit for both transaction and account balance
     db.refresh(db_transaction)
     return db_transaction
     

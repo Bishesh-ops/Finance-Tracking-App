@@ -130,3 +130,76 @@ def delete_category_api(category_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Category not found")
     crud.delete_category(db=db, db_category=db_category)
     return # No content for 204 status
+
+@app.post("/users/{user_id}/transactions/", response_model=schemas.Transaction, status_code=status.HTTP_201_CREATED)
+def create_transaction_for_user_api(
+    user_id: int, 
+    transaction: schemas.TransactionCreate, 
+    db: Session = Depends(get_db)
+):
+    db_user = crud.get_user(db, user_id=user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found") # VErify if th euser exists
+    
+    # Ensure the account and category exist
+    db_account = crud.get_account(db, account_id=transaction.account_id, user_id=user_id)
+    if not db_account:
+        raise HTTPException(status_code=404, detail="Account not found or does not belong to this user")
+    
+    db_category = crud.get_category(db, category_id=transaction.category_id)
+    if not db_category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    return crud.create_user_transaction(db=db, transaction=transaction, user_id=user_id) 
+
+@app.get("/users/{user_id}/transactions/{transaction_id}", response_model=schemas.Transaction)
+def read_transaction_api(user_id: int, transaction_id: int, db: Session = Depends(get_db)):
+    db_transaction = crud.get_transaction(db, transaction_id=transaction_id, user_id=user_id)
+    if db_transaction is None:
+        raise HTTPException(status_code=404, detail="Transaction not found or does not belong to this user")
+    return db_transaction
+
+@app.get("/users/{user_id}/transactions/", response_model=List[schemas.Transaction])
+def read_user_transactions_api(user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    # Ensure user exists (optional, but good practice)
+    db_user = crud.get_user(db, user_id=user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    transactions = crud.get_transactions(db, user_id=user_id, skip=skip, limit=limit)
+    return transactions
+
+@app.put("/users/{user_id}/transactions/{transaction_id}", response_model=schemas.Transaction)
+def update_transaction_api(
+    user_id: int,
+    transaction_id: int,
+    transaction_update: schemas.TransactionUpdate,
+    db: Session = Depends(get_db)
+):
+
+    db_transaction = crud.get_transaction(db, transaction_id=transaction_id, user_id=user_id)
+    if db_transaction is None:
+        raise HTTPException(status_code=404, detail="Transaction not found or does not belong to this user")
+
+
+    if transaction_update.account_id is not None and transaction_update.account_id != db_transaction.account_id:
+        new_account = crud.get_account(db, account_id=transaction_update.account_id, user_id=user_id)
+        if not new_account:
+            raise HTTPException(status_code=400, detail="New account not found or does not belong to this user")
+
+    if transaction_update.category_id is not None and transaction_update.category_id != db_transaction.category_id:
+        new_category = crud.get_category(db, category_id=transaction_update.category_id)
+        if not new_category:
+            raise HTTPException(status_code=400, detail="New category not found")
+
+    return crud.update_transaction(db=db, db_transaction=db_transaction, transaction_update=transaction_update)
+
+@app.delete("/users/{user_id}/transactions/{transaction_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_transaction_api(user_id: int, transaction_id: int, db: Session = Depends(get_db)):
+    # Get transaction ensuring it belongs to the specified user
+    db_transaction = crud.get_transaction(db, transaction_id=transaction_id, user_id=user_id)
+    if db_transaction is None:
+        raise HTTPException(status_code=404, detail="Transaction not found or does not belong to this user")
+
+    crud.delete_transaction(db=db, db_transaction=db_transaction)
+    return
