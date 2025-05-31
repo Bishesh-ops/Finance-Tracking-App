@@ -108,3 +108,77 @@ def delete_category(db: Session, db_category: models.Category):
     db.delete(db_category)
     db.commit()
     return {"message": "Category deleted successfully"}
+
+def _adjust_account_balance(db: Session, account_id: int, amount: float, transaction_type: str):
+    account = db.query(models.Account).filter(models.Account.id == account_id).first()
+    if account:
+        if transaction_type == "income":
+            account.balance += amount
+        elif transaction_type == "expense":
+            account.balance -= amount
+        else:
+            raise ValueError("Invalid transaction type. Use 'income' or 'expense'.")
+        
+        db.add(account)
+        db.commit()
+        db.refresh(account)
+        return account 
+    
+def create_user_transaction(db: Session, transaction: schemas.TransactionCreate, user_id: int):
+    db_transaction = models.Transaction(
+        **transaction.model_dump(exclude={"account_id", "category_id"}), 
+        user_id=user_id,
+        account_id=transaction.account_id,
+        category_id=transaction.category_id
+    )
+    db.add(db_transaction)
+    db.flush()
+    
+    _adjust_account_balance(db, db_transaction.account_id, db_transaction.amount, db_transaction.type)
+    db.commit()
+    db.refresh(db_transaction)
+    return db_transaction
+    
+    
+def get_transaction(db: Session, transaction_id: int, user_id: Optional[int] = None):
+    query = db.query(models.Transaction).filter(models.Transaction.id == transaction_id)
+    if user_id:  # If user_id is provided, ensure transaction belongs to this user
+        query = query.filter(models.Transaction.user_id == user_id)
+    return query.first()
+
+def get_transactions(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db.query(models.Transaction).filter(models.Transaction.user_id == user_id).offset(skip).limit(limit).all()
+
+def update_transaction(db: Session, db_transaction: models.Transaction, transaction_update: schemas.TransactionUpdate):
+    old_ammount = db_transaction.amount
+    old_type = db_transaction.type
+    old_account_id = db_transaction.account_id
+    
+    update_data = transaction_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_transaction, key, value)
+    db.add(db_transaction)
+    
+    new_ammount = db_transaction.amount
+    new_type = db_transaction.type
+    new_account_id = db_transaction.account_id
+    
+    if old_account_id != new_account_id:
+        reverse_type = "expense" if old_type == "income" else "income"
+        _adjust_account_balance(db, old_account_id, old_ammount, reverse_type)
+        _adjust_account_balance(db, new_account_id, new_ammount, new_type)
+    elif old_ammount!= new_ammount or old_type != new_type:
+        reverse_type = "expense" if old_type == "income" else "income"
+        _adjust_account_balance(db, old_account_id, old_ammount, reverse_type)
+        _adjust_account_balance(db, new_account_id, new_ammount, new_type)
+    
+    db.commit()
+    db.refresh(db_transaction)
+    return db_transaction
+
+def delete_transaction(db: Session, db_transaction: models.Transaction):
+    reverse_type = "expense" if db_transaction.type == "income" else "income"
+    _adjust_account_balance(db, db_transaction.account_id, db_transaction.amount, reverse_type)
+    db.delete(db_transaction)
+    db.commit()
+    return {"message": "Transaction deleted successfully"}
