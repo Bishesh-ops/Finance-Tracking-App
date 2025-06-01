@@ -1,0 +1,42 @@
+services:
+  # Service for your PostgreSQL database
+  db:
+    image: postgres:15-alpine # Use a lightweight PostgreSQL image (alpine is smaller)
+    container_name: finance_tracker # A custom name for the container
+    environment:
+      POSTGRES_DB: finance_tracker # Matches POSTGRES_DB in .env and DATABASE_URL
+      POSTGRES_USER: myuser      # Matches POSTGRES_USER in .env and DATABASE_URL
+      POSTGRES_PASSWORD: mypassword # Matches POSTGRES_PASSWORD in .env and DATABASE_URL
+    volumes:
+      - db_data:/var/lib/postgresql/data # Persist database data to a named volume
+    ports:
+      - "5432:5432" # Map container port 5432 to host port 5432 (optional, for direct access like DBeaver)
+    healthcheck: # Health check to ensure DB is ready before app starts
+      test: ["CMD-SHELL", "pg_isready -U myuser -d finance_tracker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Service for the FastAPI backend application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finance_tracker_app
+    # --- CRITICAL CHANGE HERE: Use env_file to load variables from .env ---
+    env_file:
+      - ./.env # This tells Docker Compose to load all variables from your .env file
+    # --- REMOVE the 'environment:' block that was previously here.
+    # The variables will now be loaded directly from the .env file.
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app # Volume mount for live reloading during development
+    command: ["uvicorn", "finance_app_backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    
+# Define named volumes for data persistence
+volumes:
+  db_data: # This volume will store your PostgreSQL data
