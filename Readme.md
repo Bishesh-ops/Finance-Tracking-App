@@ -98,7 +98,7 @@ Code snippet
 ### IMPORTANT:
  - Use 'localhost' if running the Python app directly on your host machine
    (e.g., with 'uvicorn finance_app_backend.main:app --reload') and connecting
-   to a standalone Docker PG container.
+    to a standalone Docker PG container.
  - Use 'db' if running the Python app inside the Docker Compose setup
    (e.g., with 'docker compose up').
 DATABASE_URL="postgresql://myuser:mypassword@db/finance_tracker" # Set to 'db' for Docker Compose
