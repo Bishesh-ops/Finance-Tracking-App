@@ -94,18 +94,18 @@ Code snippet
 
 # .env
 
-# Database URL for PostgreSQL service within Docker Compose network
-# IMPORTANT:
-# - Use 'localhost' if running the Python app directly on your host machine
-#   (e.g., with 'uvicorn finance_app_backend.main:app --reload') and connecting
-#   to a standalone Docker PG container.
-# - Use 'db' if running the Python app inside the Docker Compose setup
-#   (e.g., with 'docker compose up').
+## Database URL for PostgreSQL service within Docker Compose network
+### IMPORTANT:
+ - Use 'localhost' if running the Python app directly on your host machine
+   (e.g., with 'uvicorn finance_app_backend.main:app --reload') and connecting
+   to a standalone Docker PG container.
+ - Use 'db' if running the Python app inside the Docker Compose setup
+   (e.g., with 'docker compose up').
 DATABASE_URL="postgresql://myuser:mypassword@db/finance_tracker" # Set to 'db' for Docker Compose
 
-# JWT Configuration
-# Generate a strong, random key using: python -c "import os; print(os.urandom(32).hex())"
-SECRET_KEY="YOUR_ACTUAL_GENERATED_SECRET_KEY_HERE" # <-- REPLACE WITH YOUR ACTUAL GENERATED KEY!
+## JWT Configuration
+### Generate a strong, random key using: python -c "import os; print(os.urandom(32).hex())"
+SECRET_KEY="ea2fb4850393d87edb81fb40878dc5fe2c2798f4b9833e5e4aba855c275a7fbb"
 ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 Action: Replace myuser, mypassword, and YOUR_ACTUAL_GENERATED_SECRET_KEY_HERE with your chosen secure values.
