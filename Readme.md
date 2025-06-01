@@ -60,9 +60,6 @@ Clone this repository to your local machine:
 
 Bash
 
-git clone https://github.com/YourUsername/finance_tracker_backend.git
-cd finance_tracker_backend
-(Remember to replace YourUsername with your actual GitHub username once you push this project to your own repo.)
 
 2. Set Up Python Virtual Environment
 It's highly recommended to use a Python virtual environment to manage project dependencies.
