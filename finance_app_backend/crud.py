@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
 from . import models, schemas
-from typing import Optional
+from typing import Optional, List
+from datetime import datetime, date
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -67,7 +68,7 @@ def update_account(db: Session, db_account: models.Account, account_update: sche
 def delete_account(db: Session, db_account: models.Account):
     db.delete(db_account)
     db.commit()
-    return {"message": "Account deleted successfully"}
+
 
 #----Category Crud Functions-------
 
@@ -107,7 +108,7 @@ def update_category(db: Session, db_category: models.Category, category_update: 
 def delete_category(db: Session, db_category: models.Category):
     db.delete(db_category)
     db.commit()
-    return {"message": "Category deleted successfully"}
+
 
 def _adjust_account_balance(db: Session, account_id: int, amount: float, transaction_type: str):
     account = db.query(models.Account).filter(models.Account.id == account_id).first()
@@ -149,8 +150,46 @@ def get_transaction(db: Session, transaction_id: int, user_id: Optional[int] = N
         query = query.filter(models.Transaction.user_id == user_id)
     return query.first()
 
-def get_transactions(db: Session, user_id: int, skip: int = 0, limit: int = 100):
-    return db.query(models.Transaction).filter(models.Transaction.user_id == user_id).offset(skip).limit(limit).all()
+def get_transactions(
+    db: Session,
+    user_id: int,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    category_id: Optional[int] = None,
+    transaction_type: Optional[str] = None,
+    sort_by: str = "date",
+    order: str = "desc",
+    skip: int = 0,
+    limit: int = 100    
+):
+    query = db.query(models.Transaction).filter(models.Transaction.user_id == user_id)
+
+    if start_date:
+        query = query.filter(models.Transaction.date >= start_date)
+    if end_date:
+        query = query.filter(models.Transaction.date <= end_date)
+    if category_id:
+        query = query.filter(models.Transaction.category_id == category_id)
+    if transaction_type:
+        query = query.filter(models.Transaction.type == transaction_type)
+
+    sort_column = None
+    if sort_by == "date":
+        sort_column = models.Transaction.date
+    elif sort_by == "amount":
+        sort_column = models.Transaction.amount
+    else:
+        sort_column = models.Transaction.id  # Default to ID if invalid sort_by
+    if sort_column:
+        if order == "asc":
+            query = query.order_by(sort_column.asc())
+        else:
+            query = query.order_by(sort_column.desc())
+    else:
+        query = query.order_by(models.Transaction.date.desc())  # Default order
+
+    return query.offset(skip).limit(limit).all()
+
 
 def update_transaction(db: Session, db_transaction: models.Transaction, transaction_update: schemas.TransactionUpdate):
     old_ammount = db_transaction.amount
@@ -184,4 +223,3 @@ def delete_transaction(db: Session, db_transaction: models.Transaction):
     _adjust_account_balance(db, db_transaction.account_id, db_transaction.amount, reverse_type)
     db.delete(db_transaction)
     db.commit()
-    return {"message": "Transaction deleted successfully"}

@@ -4,6 +4,12 @@ FROM python:3.12-slim-bookworm
 # Set the working directory in the container
 WORKDIR /app
 
+# --- NEW DEBUG LINE: List contents of the build context ---
+# This command will show what Docker perceives as being in the /app directory
+# at this stage of the build process.
+RUN ls -la || dir # Use 'ls -la' for Linux containers, 'dir' for Windows containers. Python is Linux.
+# --- END DEBUG LINE ---
+
 # Copy the requirements file into the container
 COPY requirements.txt .
 
@@ -11,18 +17,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the entire backend application source code into the container
-# The first '.' is the source (your current dir - FINANCE_APP)
-# The second '.' is the destination (the WORKDIR /app in the container)
 COPY . .
 
 # Expose the port that Uvicorn will run on
 EXPOSE 8000
 
-# NEW DEBUG LINE: Print DATABASE_URL during container build/startup
-# This is here to help confirm the .env variable is correctly loaded.
-# You can remove this line once everything is working reliably.
-RUN echo "DEBUG: DATABASE_URL inside container: $DATABASE_URL"
-
 # Command to run the application using Uvicorn
-# Make sure 'finance_app_backend.main:app' matches your app structure
 CMD ["uvicorn", "finance_app_backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

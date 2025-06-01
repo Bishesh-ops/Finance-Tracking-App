@@ -1,7 +1,11 @@
-from pydantic import BaseModel
+# finance_app_backend/schemas.py
+from __future__ import annotations # Enables postponed evaluation of type annotations
+
+from pydantic import BaseModel, ConfigDict # <-- Import ConfigDict here!
 from datetime import datetime
 from typing import Optional, List
 
+# --- User Schemas ---
 class UserBase(BaseModel):
     username: str
 
@@ -10,10 +14,9 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    # accounts: List["Account"] = []
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True) # <-- Updated syntax!
 
+# --- Account Schemas ---
 class AccountBase(BaseModel):
     name: str
     balance: Optional[float] = 0.0
@@ -29,45 +32,35 @@ class Account(AccountBase):
     id : int
     owner_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True) # <-- Updated syntax!
 
-
-# ---Category Schemas ---
-
+# --- Category Schemas ---
 class CategoryBase(BaseModel):
     name: str
 
 class CategoryCreate(CategoryBase):
     pass
 
-# Schema for updating a category (e.g., changing name)
 class CategoryUpdate(CategoryBase):
-    name: Optional[str] = None # Make name optional for updates
+    name: Optional[str] = None
 
 class Category(CategoryBase):
     id: int
-    # transactions: List["Transaction"] = [] # Optional: include transactions if desired
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True) # <-- Updated syntax!
 
 # --- Transaction Schemas ---
-# MAKE SURE THESE CLASSES ARE NOT INDENTED BENEATH 'Category'
-# They should be at the same level as 'Category', 'Account', 'User' etc.
 class TransactionBase(BaseModel):
-    amount: float # CORRECTED: 'ammount' -> 'amount'
-    type: str
+    amount: float
+    type: str # "income" or "expense"
     description: Optional[str] = None
     date: Optional[datetime] = None
-
 
 class TransactionCreate(TransactionBase):
     account_id: int
     category_id: int
 
-
-class TransactionUpdate(BaseModel): # Inherit from BaseModel directly for full optionality
+class TransactionUpdate(BaseModel):
     amount: Optional[float] = None
     type: Optional[str] = None
     description: Optional[str] = None
@@ -75,20 +68,18 @@ class TransactionUpdate(BaseModel): # Inherit from BaseModel directly for full o
     account_id: Optional[int] = None
     category_id: Optional[int] = None
 
-
 class Transaction(TransactionBase):
     id: int
     user_id: int
     account_id: int
     category_id: int
 
-    class Config:
-        from_attributes = True
-        
-        
+    model_config = ConfigDict(from_attributes=True) # <-- Updated syntax!
+
+# --- Authentication Schemas ---
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
-    
+
 class TokenData(BaseModel):
     username: Optional[str] = None

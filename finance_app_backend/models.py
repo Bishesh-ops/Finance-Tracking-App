@@ -1,4 +1,6 @@
 # finance_app_backend/models.py
+from __future__ import annotations # Enables postponed evaluation of type annotations
+
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -11,8 +13,8 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
 
+    # Relationships: a user can have multiple accounts and multiple transactions
     accounts = relationship("Account", back_populates="owner", cascade="all, delete-orphan")
-    # This relationship points to the 'Transaction' model, which will be defined below.
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
 
 class Account(Base):
@@ -24,8 +26,6 @@ class Account(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="accounts")
-    # CORRECTED LINE: This was 'accounts' before, now it's 'transactions'.
-    # This relationship points to the 'Transaction' model, which will be defined below.
     transactions = relationship("Transaction", back_populates="account", cascade="all, delete-orphan")
 
 class Category(Base):
@@ -34,10 +34,8 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True)
 
-    # This relationship points to the 'Transaction' model, which will be defined below.
     transactions = relationship("Transaction", back_populates="category")
 
-# --- NEW ADDITION: The Transaction Model ---
 class Transaction(Base):
     __tablename__ = "transactions"
 
@@ -50,7 +48,6 @@ class Transaction(Base):
     account_id = Column(Integer, ForeignKey("accounts.id"))
     category_id = Column(Integer, ForeignKey("categories.id"))
 
-    # Define the back_populates for the relationships
     user = relationship("User", back_populates="transactions")
     account = relationship("Account", back_populates="transactions")
     category = relationship("Category", back_populates="transactions")

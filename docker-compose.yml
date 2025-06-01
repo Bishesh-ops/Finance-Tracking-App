@@ -2,7 +2,7 @@ services:
   # Service for your PostgreSQL database
   db:
     image: postgres:15-alpine # Use a lightweight PostgreSQL image (alpine is smaller)
-    container_name: finance_tracker # A custom name for the container
+    container_name: finance_tracker_db # A custom name for the container
     environment:
       POSTGRES_DB: finance_tracker # Matches POSTGRES_DB in .env and DATABASE_URL
       POSTGRES_USER: myuser      # Matches POSTGRES_USER in .env and DATABASE_URL
@@ -17,26 +17,25 @@ services:
       timeout: 5s
       retries: 5
 
-  # Service for the FastAPI backend application
+  # Service for your FastAPI backend application
   app:
     build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: finance_tracker_app
-    # --- CRITICAL CHANGE HERE: Use env_file to load variables from .env ---
-    env_file:
-      - ./.env # This tells Docker Compose to load all variables from your .env file
-    # --- REMOVE the 'environment:' block that was previously here.
-    # The variables will now be loaded directly from the .env file.
+      context: . # Build context is the current directory (FINANCE_APP)
+      dockerfile: Dockerfile # Use the Dockerfile created earlier
+    container_name: finance_tracker_app # A custom name for the container
+    env_file: # Explicitly load environment variables from the .env file in the context directory
+      - ./.env
     ports:
-      - "8000:8000"
-    depends_on:
+      - "8000:8000" # Map container port 8000 to host port 8000
+    depends_on: # Ensure the 'db' service is started and healthy before 'app' starts
       db:
-        condition: service_healthy
+        condition: service_healthy # Wait until the DB is healthy
     volumes:
-      - .:/app # Volume mount for live reloading during development
+      # Mount the application code for live reloading during development.
+      # This allows you to edit code on your host and see changes in the container without rebuilding.
+      - .:/app
     command: ["uvicorn", "finance_app_backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-    
+
 # Define named volumes for data persistence
 volumes:
   db_data: # This volume will store your PostgreSQL data
