@@ -4,12 +4,6 @@ FROM python:3.12-slim-bookworm
 # Set the working directory in the container
 WORKDIR /app
 
-# --- NEW DEBUG LINE: List contents of the build context ---
-# This command will show what Docker perceives as being in the /app directory
-# at this stage of the build process.
-RUN ls -la || dir # Use 'ls -la' for Linux containers, 'dir' for Windows containers. Python is Linux.
-# --- END DEBUG LINE ---
-
 # Copy the requirements file into the container
 COPY requirements.txt .
 
@@ -19,8 +13,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the entire backend application source code into the container
 COPY . .
 
-# Expose the port that Uvicorn will run on
+# Expose the port that Uvicorn/Gunicorn will run on
 EXPOSE 8000
 
-# Command to run the application using Uvicorn
-CMD ["uvicorn", "finance_app_backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# --- MODIFIED: Command to run the application using Gunicorn with Uvicorn workers ---
+# We use gunicorn to manage uvicorn workers for production stability and performance.
+# The --bind 0.0.0.0:8000 makes it listen on the correct port.
+# The --workers parameter can be adjusted (2*CPU_CORES + 1 is a common formula).
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "finance_app_backend.main:app"]
+# Removed: "--reload" flag
