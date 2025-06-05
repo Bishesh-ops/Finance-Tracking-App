@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import timedelta, date # Import date for filtering
 
+from starlette.middleware.cors import CORSMiddleware
+
 from . import models, schemas, crud, auth # Import core modules for app logic and data models
 from .database import engine, get_db, Base # Import database setup
 
@@ -17,7 +19,18 @@ app = FastAPI(
     description="A backend API for managing personal finances, including users, accounts, categories, and transactions.",
     version="0.1.0",
 )
+origins = [
+    "http://localhost:3000", # Your Next.js frontend development server
+    # "https://your-frontend-domain.com",
+]
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # List of origins that can make requests
+    allow_credentials=True,         # Allow cookies to be included in cross-origin requests
+    allow_methods=["*"],            # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],            # Allow all headers in cross-origin requests
+)
 
 # --- Authentication Endpoint ---
 @app.post("/token", response_model=schemas.Token)
