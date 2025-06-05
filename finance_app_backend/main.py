@@ -18,10 +18,6 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# --- Database Initialization ---
-# Base.metadata.create_all(bind=engine) # <--- THIS LINE IS NOW DELETED!
-# Database schema is now managed by Alembic migrations (alembic upgrade head)
-
 
 # --- Authentication Endpoint ---
 @app.post("/token", response_model=schemas.Token)
