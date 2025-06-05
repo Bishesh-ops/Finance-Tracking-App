@@ -20,5 +20,5 @@ EXPOSE 8000
 # We use gunicorn to manage uvicorn workers for production stability and performance.
 # The --bind 0.0.0.0:8000 makes it listen on the correct port.
 # The --workers parameter can be adjusted (2*CPU_CORES + 1 is a common formula).
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "finance_app_backend.main:app"]
+CMD ["uvicorn", "finance_app_backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 # Removed: "--reload" flag
