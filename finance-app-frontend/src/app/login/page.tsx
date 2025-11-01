@@ -2,11 +2,14 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,8 +34,7 @@ export default function LoginPage() {
 
       if (response.ok) {
         // 3. Handle success
-        setMessage("Login successful!");
-        console.log("Received token:", data.access_token);
+        login(data.access_token);
         setUsername("");
         setPassword("");
       } else {
