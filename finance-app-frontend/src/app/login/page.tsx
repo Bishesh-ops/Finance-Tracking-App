@@ -1,35 +1,42 @@
-// src/app/page.tsx
+// src/app/login/page.tsx
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
-export default function HomePage() {
+export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage("Registering...");
+    setMessage("Logging in...");
+
+    // 1. Create the x-www-form-urlencoded body
+    const formData = new URLSearchParams();
+    formData.append("username", username);
+    formData.append("password", password);
+
     try {
-      const response = await fetch("http://localhost:8000/users/", {
+      // 2. Send the request to the /token endpoint
+      const response = await fetch("http://localhost:8000/token", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: JSON.stringify({ username, password }),
+        body: formData.toString(),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(
-          `User registered successfully: ${data.username} (ID: ${data.id})`
-        );
+        // 3. Handle success
+        setMessage("Login successful!");
+        console.log("Received token:", data.access_token);
         setUsername("");
         setPassword("");
       } else {
+        // 4. Handle errors from the backend
         setMessage(
           `Error: ${
             data.detail || response.statusText || "Something went wrong"
@@ -37,6 +44,7 @@ export default function HomePage() {
         );
       }
     } catch (error: unknown) {
+      // 5. Handle network or other errors
       let errorMessage =
         "Network error: Could not connect to the backend. (Is it running?)";
       if (error instanceof Error) {
@@ -59,10 +67,10 @@ export default function HomePage() {
       }}
     >
       <h1 style={{ textAlign: "center", color: "#333", marginBottom: "20px" }}>
-        Register New User
+        Login
       </h1>
       <form
-        onSubmit={handleRegister}
+        onSubmit={handleLogin}
         style={{ display: "flex", flexDirection: "column", gap: "15px" }}
       >
         <input
@@ -95,7 +103,7 @@ export default function HomePage() {
           type="submit"
           style={{
             padding: "12px 20px",
-            backgroundColor: "#007bff",
+            backgroundColor: "#28a745",
             color: "white",
             border: "none",
             borderRadius: "4px",
@@ -104,7 +112,7 @@ export default function HomePage() {
             fontWeight: "bold",
           }}
         >
-          Register
+          Login
         </button>
       </form>
       {message && (
@@ -113,7 +121,7 @@ export default function HomePage() {
             marginTop: "20px",
             textAlign: "center",
             color:
-              message.startsWith("Error") || message.startsWith("Network error")
+              message.startsWith("Error") || message.startsWith("Network")
                 ? "red"
                 : "green",
             fontSize: "16px",
@@ -122,19 +130,6 @@ export default function HomePage() {
           {message}
         </p>
       )}
-
-      {/* --- 2. ADD THIS SECTION AT THE BOTTOM --- */}
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <p>
-          Already have an account?{" "}
-          <Link
-            href="/login"
-            style={{ color: "#007bff", textDecoration: "none" }}
-          >
-            Login here
-          </Link>
-        </p>
-      </div>
     </div>
   );
 }
