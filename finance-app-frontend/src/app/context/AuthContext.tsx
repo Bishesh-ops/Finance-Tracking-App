@@ -1,57 +1,133 @@
 // src/app/context/AuthContext.tsx
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
 
-// Define the shape of your context's state
-interface AuthContextType {
-  token: string | null;
-  login: (token: string) => void;
-  logout: () => void;
-  isAuthenticated: () => boolean;
+// ============================================================================
+// TYPES
+// ============================================================================
+
+interface User {
+  id: number;
+  username: string;
 }
 
-// 1. Create the context with a default value of `null`
+interface AuthContextType {
+  token: string | null;
+  user: User | null;
+  login: (token: string, user: User) => void;
+  logout: () => void;
+  isAuthenticated: () => boolean;
+  isLoading: boolean;
+}
+
+// ============================================================================
+// CONTEXT CREATION
+// ============================================================================
+
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Create the AuthProvider component
+// ============================================================================
+// AUTH PROVIDER COMPONENT
+// ============================================================================
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  const login = (newToken: string) => {
+  // Load auth state from localStorage on mount (client-side only)
+  useEffect(() => {
+    // Check if we're in the browser
+    if (typeof window === "undefined") {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const storedToken = localStorage.getItem("auth_token");
+      const storedUser = localStorage.getItem("auth_user");
+
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error("Error loading auth state:", error);
+      // Clear potentially corrupted data
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("auth_user");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const login = (newToken: string, newUser: User) => {
     setToken(newToken);
-    // In a real app, you'd save this to localStorage or httpOnly cookies
-    console.log("Token saved:", newToken);
-    router.push("/dashboard"); // <-- Redirect to dashboard after login!
+    setUser(newUser);
+
+    // Persist to localStorage
+    if (typeof window !== "undefined") {
+      localStorage.setItem("auth_token", newToken);
+      localStorage.setItem("auth_user", JSON.stringify(newUser));
+    }
+
+    // Redirect to dashboard
+    router.push("/dashboard");
   };
 
   const logout = () => {
     setToken(null);
-    // Clear token from storage
-    router.push("/login"); // Redirect to login on logout
+    setUser(null);
+
+    // Clear localStorage
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("auth_user");
+    }
+
+    // Redirect to login
+    router.push("/login");
   };
 
   const isAuthenticated = () => {
-    return !!token;
+    return !!token && !!user;
   };
 
   return (
-    <AuthContext.Provider value={{ token, login, logout, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        user,
+        login,
+        logout,
+        isAuthenticated,
+        isLoading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Create a custom hook to easily use the context
+// ============================================================================
+// CUSTOM HOOK
+// ============================================================================
+
 export function useAuth() {
-  // 2. The type of `context` is inferred as `AuthContextType | null`
   const context = useContext(AuthContext);
 
-  // 3. Check for `null` instead of `undefined`
   if (context === null) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
+
   return context;
 }
