@@ -221,14 +221,16 @@ async def read_category_api(
 async def read_all_categories_api(
     skip: int = 0,
     limit: int = 100,
+    type: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user) # Viewable by any authenticated user
 ) -> List[schemas.Category]:
     """
-    Retrieves all categories with pagination.
+    Retrieves all categories with pagination and optional type filtering.
     Authorization: Any authenticated user can view categories.
+    Query param 'type' can filter by: "income", "expense", or "both"
     """
-    categories = crud.get_categories(db, skip=skip, limit=limit)
+    categories = crud.get_categories(db, skip=skip, limit=limit, type_filter=type)
     return categories
 
 @app.put("/categories/{category_id}", response_model=schemas.Category)
@@ -282,9 +284,11 @@ async def create_transaction_for_user_api(
     if not db_account:
         raise HTTPException(status_code=404, detail="Account not found or does not belong to this user")
 
-    db_category = crud.get_category(db, category_id=transaction.category_id) # Categories are global
-    if not db_category:
-        raise HTTPException(status_code=404, detail="Category not found")
+    # Verify category exists if provided (category is optional)
+    if transaction.category_id is not None:
+        db_category = crud.get_category(db, category_id=transaction.category_id)
+        if not db_category:
+            raise HTTPException(status_code=404, detail="Category not found")
 
     return crud.create_user_transaction(db=db, transaction=transaction, user_id=user_id)
 
@@ -367,8 +371,8 @@ async def update_transaction_api(
         if not new_account:
             raise HTTPException(status_code=400, detail="New account not found or does not belong to this user")
 
-    # If the category_id is being updated, verify the new category exists
-    if transaction_update.category_id is not None and transaction_update.category_id != db_transaction.category_id:
+    # If the category_id is being updated, verify the new category exists (category is optional, so allow None)
+    if transaction_update.category_id is not None:
         new_category = crud.get_category(db, category_id=transaction_update.category_id)
         if not new_category:
             raise HTTPException(status_code=400, detail="New category not found")

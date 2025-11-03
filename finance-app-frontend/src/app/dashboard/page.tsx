@@ -236,7 +236,7 @@ function DashboardContent() {
     description?: string;
     date?: string;
     account_id: number;
-    category_id: number;
+    category_id?: number | null;
   }) => {
     if (!user || !token) return;
     setModalLoading(true);
@@ -273,15 +273,15 @@ function DashboardContent() {
   };
 
   // Category handlers
-  const handleSaveCategory = async (name: string) => {
+  const handleSaveCategory = async (name: string, type: 'income' | 'expense' | 'both') => {
     if (!token) return;
     setModalLoading(true);
 
     try {
       if (editingCategory) {
-        await api.updateCategory(editingCategory.id, name, token);
+        await api.updateCategory(editingCategory.id, { name, type }, token);
       } else {
-        await api.createCategory(name, token);
+        await api.createCategory(name, type, token);
       }
       await loadDashboardData();
       setEditingCategory(null);
@@ -479,29 +479,39 @@ function DashboardContent() {
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className="bg-gray-100 px-4 py-2 rounded-full flex items-center gap-2"
-              >
-                <span className="text-gray-800">{category.name}</span>
-                <button
-                  onClick={() => {
-                    setEditingCategory(category);
-                    setCategoryModalOpen(true);
-                  }}
-                  className="text-blue-600 hover:text-blue-700 text-xs"
+            {categories.map((category) => {
+              const typeColor = category.type === 'income' ? 'bg-green-100 text-green-800' :
+                                category.type === 'expense' ? 'bg-red-100 text-red-800' :
+                                'bg-blue-100 text-blue-800';
+              const typeLabel = category.type === 'income' ? '📈' :
+                               category.type === 'expense' ? '📉' :
+                               '↔️';
+
+              return (
+                <div
+                  key={category.id}
+                  className={`${typeColor} px-4 py-2 rounded-full flex items-center gap-2`}
                 >
-                  ✏️
-                </button>
-                <button
-                  onClick={() => handleDeleteCategory(category.id)}
-                  className="text-red-600 hover:text-red-700 text-xs"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
+                  <span className="text-sm">{typeLabel}</span>
+                  <span>{category.name}</span>
+                  <button
+                    onClick={() => {
+                      setEditingCategory(category);
+                      setCategoryModalOpen(true);
+                    }}
+                    className="hover:opacity-70 text-xs"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={() => handleDeleteCategory(category.id)}
+                    className="hover:opacity-70 text-xs"
+                  >
+                    ×
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       </main>

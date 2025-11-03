@@ -13,7 +13,7 @@ interface TransactionModalProps {
     description?: string;
     date?: string;
     account_id: number;
-    category_id: number;
+    category_id?: number | null;
   }) => Promise<void>;
   transaction?: Transaction | null;
   accounts: Account[];
@@ -38,6 +38,11 @@ export default function TransactionModal({
   const [categoryId, setCategoryId] = useState("");
   const [error, setError] = useState("");
 
+  // Filter categories based on transaction type
+  const filteredCategories = categories.filter(
+    (cat) => cat.type === type || cat.type === "both"
+  );
+
   useEffect(() => {
     if (transaction) {
       setAmount(Math.abs(transaction.amount).toString());
@@ -45,14 +50,18 @@ export default function TransactionModal({
       setDescription(transaction.description || "");
       setDate(transaction.date.split("T")[0]);
       setAccountId(transaction.account_id.toString());
-      setCategoryId(transaction.category_id.toString());
+      setCategoryId(transaction.category_id?.toString() || "");
     } else {
       setAmount("");
       setType("expense");
       setDescription("");
       setDate(new Date().toISOString().split("T")[0]);
       setAccountId(accounts[0]?.id.toString() || "");
-      setCategoryId(categories[0]?.id.toString() || "");
+      // Set first matching category for the default type
+      const defaultCategories = categories.filter(
+        (cat) => cat.type === "expense" || cat.type === "both"
+      );
+      setCategoryId(defaultCategories[0]?.id.toString() || "");
     }
     setError("");
   }, [transaction, isOpen, accounts, categories]);
@@ -67,8 +76,8 @@ export default function TransactionModal({
       return;
     }
 
-    if (!accountId || !categoryId) {
-      setError("Please select an account and category");
+    if (!accountId) {
+      setError("Please select an account");
       return;
     }
 
@@ -79,7 +88,7 @@ export default function TransactionModal({
         description: description.trim() || undefined,
         date: date || undefined,
         account_id: parseInt(accountId),
-        category_id: parseInt(categoryId),
+        category_id: categoryId ? parseInt(categoryId) : null,
       });
       onClose();
     } catch (err) {
@@ -112,9 +121,15 @@ export default function TransactionModal({
                 type="radio"
                 value="income"
                 checked={type === "income"}
-                onChange={(e) =>
-                  setType(e.target.value as "income" | "expense")
-                }
+                onChange={(e) => {
+                  const newType = e.target.value as "income" | "expense";
+                  setType(newType);
+                  // Reset category when type changes
+                  const matchingCategories = categories.filter(
+                    (cat) => cat.type === newType || cat.type === "both"
+                  );
+                  setCategoryId(matchingCategories[0]?.id.toString() || "");
+                }}
                 disabled={isLoading}
                 className="mr-2"
               />
@@ -125,9 +140,15 @@ export default function TransactionModal({
                 type="radio"
                 value="expense"
                 checked={type === "expense"}
-                onChange={(e) =>
-                  setType(e.target.value as "income" | "expense")
-                }
+                onChange={(e) => {
+                  const newType = e.target.value as "income" | "expense";
+                  setType(newType);
+                  // Reset category when type changes
+                  const matchingCategories = categories.filter(
+                    (cat) => cat.type === newType || cat.type === "both"
+                  );
+                  setCategoryId(matchingCategories[0]?.id.toString() || "");
+                }}
                 disabled={isLoading}
                 className="mr-2"
               />
@@ -173,21 +194,28 @@ export default function TransactionModal({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Category
+            Category {type === "income" && <span className="text-gray-500 text-xs">(Optional)</span>}
           </label>
           <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             disabled={isLoading}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900"
-            required
           >
-            {categories.map((cat) => (
+            {type === "income" && (
+              <option value="">None (Uncategorized)</option>
+            )}
+            {filteredCategories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.name}
               </option>
             ))}
           </select>
+          {filteredCategories.length === 0 && (
+            <p className="text-sm text-gray-500 mt-1">
+              No categories available for {type}. Create one first!
+            </p>
+          )}
         </div>
 
         <div>

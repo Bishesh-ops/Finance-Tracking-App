@@ -73,11 +73,14 @@ def delete_account(db: Session, db_account: models.Account):
 #----Category Crud Functions-------
 
 def create_category(db: Session, category: schemas.CategoryCreate):
-    # Check if category name already exists (optional, but good for uniqueness)
-    db_category = db.query(models.Category).filter(models.Category.name == category.name).first()
+    # Check if category with same name AND type already exists
+    db_category = db.query(models.Category).filter(
+        models.Category.name == category.name,
+        models.Category.type == category.type
+    ).first()
     if db_category:
         return None # Indicate category already exists
-    db_category = models.Category(name=category.name)
+    db_category = models.Category(name=category.name, type=category.type)
     db.add(db_category)
     db.commit()
     db.refresh(db_category)
@@ -90,9 +93,18 @@ def get_category(db: Session, category_id: int):
 def get_category_by_name(db: Session, name: str):
     return db.query(models.Category).filter(models.Category.name == name).first()
 
-# Get all categories
-def get_categories(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Category).offset(skip).limit(limit).all()
+# Get all categories with optional type filtering
+def get_categories(db: Session, skip: int = 0, limit: int = 100, type_filter: Optional[str] = None):
+    query = db.query(models.Category)
+
+    # Filter by type if provided
+    if type_filter:
+        # Return categories that match the type OR are type "both"
+        query = query.filter(
+            (models.Category.type == type_filter) | (models.Category.type == "both")
+        )
+
+    return query.offset(skip).limit(limit).all()
 
 # Update an existing category
 def update_category(db: Session, db_category: models.Category, category_update: schemas.CategoryUpdate):

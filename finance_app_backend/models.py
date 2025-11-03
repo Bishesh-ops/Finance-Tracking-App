@@ -32,7 +32,8 @@ class Category(Base):
     __tablename__ = "categories"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
+    name = Column(String, index=True)
+    type = Column(String)  # "income", "expense", or "both"
 
     transactions = relationship("Transaction", back_populates="category")
 
@@ -46,7 +47,7 @@ class Transaction(Base):
     date = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey("users.id"))
     account_id = Column(Integer, ForeignKey("accounts.id"))
-    category_id = Column(Integer, ForeignKey("categories.id"))
+    category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
 
     user = relationship("User", back_populates="transactions")
     account = relationship("Account", back_populates="transactions")

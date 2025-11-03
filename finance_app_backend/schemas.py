@@ -37,12 +37,14 @@ class Account(AccountBase):
 # --- Category Schemas ---
 class CategoryBase(BaseModel):
     name: str
+    type: str  # "income", "expense", or "both"
 
 class CategoryCreate(CategoryBase):
     pass
 
-class CategoryUpdate(CategoryBase):
+class CategoryUpdate(BaseModel):
     name: Optional[str] = None
+    type: Optional[str] = None
 
 class Category(CategoryBase):
     id: int
@@ -58,7 +60,7 @@ class TransactionBase(BaseModel):
 
 class TransactionCreate(TransactionBase):
     account_id: int
-    category_id: int
+    category_id: Optional[int] = None
 
 class TransactionUpdate(BaseModel):
     amount: Optional[float] = None
@@ -72,7 +74,7 @@ class Transaction(TransactionBase):
     id: int
     user_id: int
     account_id: int
-    category_id: int
+    category_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True) # <-- Updated syntax!
 

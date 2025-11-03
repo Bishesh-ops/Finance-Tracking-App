@@ -100,7 +100,7 @@ function TransactionsContent() {
     description?: string;
     date?: string;
     account_id: number;
-    category_id: number;
+    category_id?: number | null;
   }) => {
     if (!user || !token) return;
     setModalLoading(true);
@@ -138,8 +138,8 @@ function TransactionsContent() {
 
   const getAccountName = (id: number) =>
     accounts.find((a) => a.id === id)?.name || "Unknown";
-  const getCategoryName = (id: number) =>
-    categories.find((c) => c.id === id)?.name || "Unknown";
+  const getCategoryName = (id: number | null) =>
+    id ? (categories.find((c) => c.id === id)?.name || "Unknown") : "Uncategorized";
 
   const totalIncome = transactions
     .filter((t) => t.type === "income")

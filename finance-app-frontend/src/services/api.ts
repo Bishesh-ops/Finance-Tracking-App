@@ -21,6 +21,7 @@ export interface Account {
 export interface Category {
   id: number;
   name: string;
+  type: 'income' | 'expense' | 'both';
 }
 
 export interface Transaction {
@@ -31,7 +32,7 @@ export interface Transaction {
   date: string;
   user_id: number;
   account_id: number;
-  category_id: number;
+  category_id: number | null;
 }
 
 // ============================================================================
@@ -197,7 +198,7 @@ class ApiService {
       description?: string;
       date?: string;
       account_id: number;
-      category_id: number;
+      category_id?: number | null;
     },
     token: string
   ): Promise<Transaction> {
@@ -216,7 +217,7 @@ class ApiService {
       description: string;
       date: string;
       account_id: number;
-      category_id: number;
+      category_id: number | null;
     }>,
     token: string
   ): Promise<Transaction> {
@@ -236,25 +237,26 @@ class ApiService {
   // CATEGORY ENDPOINTS
   // ============================================================================
 
-  async getCategories(token: string): Promise<Category[]> {
-    return this.fetchWithAuth('/categories/', token);
+  async getCategories(token: string, type?: 'income' | 'expense' | 'both'): Promise<Category[]> {
+    const queryString = type ? `?type=${type}` : '';
+    return this.fetchWithAuth(`/categories/${queryString}`, token);
   }
 
   async getCategory(categoryId: number, token: string): Promise<Category> {
     return this.fetchWithAuth(`/categories/${categoryId}`, token);
   }
 
-  async createCategory(name: string, token: string): Promise<Category> {
+  async createCategory(name: string, type: 'income' | 'expense' | 'both', token: string): Promise<Category> {
     return this.fetchWithAuth('/categories/', token, {
       method: 'POST',
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, type }),
     });
   }
 
-  async updateCategory(categoryId: number, name: string, token: string): Promise<Category> {
+  async updateCategory(categoryId: number, data: { name?: string; type?: 'income' | 'expense' | 'both' }, token: string): Promise<Category> {
     return this.fetchWithAuth(`/categories/${categoryId}`, token, {
       method: 'PUT',
-      body: JSON.stringify({ name }),
+      body: JSON.stringify(data),
     });
   }
 
