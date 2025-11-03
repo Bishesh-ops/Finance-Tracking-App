@@ -9,6 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import AccountModal from "@/components/AccountModal";
 import TransactionModal from "@/components/TransactionModal";
 import CategoryModal from "@/components/CategoryModal";
+import Link from "next/link";
 
 function StatCard({
   title,
@@ -210,8 +211,8 @@ function DashboardContent() {
       }
       await loadDashboardData();
       setEditingAccount(null);
-    } catch (err) {
-      throw err;
+    } catch {
+      throw new Error("Failed to save account");
     } finally {
       setModalLoading(false);
     }
@@ -253,8 +254,8 @@ function DashboardContent() {
       }
       await loadDashboardData();
       setEditingTransaction(null);
-    } catch (err) {
-      throw err;
+    } catch {
+      throw new Error("Failed to save transaction");
     } finally {
       setModalLoading(false);
     }
@@ -284,8 +285,8 @@ function DashboardContent() {
       }
       await loadDashboardData();
       setEditingCategory(null);
-    } catch (err) {
-      throw err;
+    } catch {
+      throw new Error("Failed to save category");
     } finally {
       setModalLoading(false);
     }
