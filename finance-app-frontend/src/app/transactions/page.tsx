@@ -228,7 +228,7 @@ function TransactionsContent() {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
               >
                 <option value="all">All</option>
                 <option value="income">Income</option>
@@ -243,7 +243,7 @@ function TransactionsContent() {
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
               >
                 <option value="all">All</option>
                 {categories.map((cat) => (
@@ -261,7 +261,7 @@ function TransactionsContent() {
               <select
                 value={filterAccount}
                 onChange={(e) => setFilterAccount(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
               >
                 <option value="all">All</option>
                 {accounts.map((acc) => (
@@ -280,7 +280,7 @@ function TransactionsContent() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
               />
             </div>
 
@@ -292,7 +292,7 @@ function TransactionsContent() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
               />
             </div>
 
@@ -306,7 +306,7 @@ function TransactionsContent() {
                   onChange={(e) =>
                     setSortBy(e.target.value as "date" | "amount")
                   }
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                 >
                   <option value="date">Date</option>
                   <option value="amount">Amount</option>
@@ -315,7 +315,7 @@ function TransactionsContent() {
                   onClick={() =>
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc")
                   }
-                  className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-900"
                 >
                   {sortOrder === "asc" ? "↑" : "↓"}
                 </button>
