@@ -415,22 +415,21 @@ function DashboardContent() {
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-                       {" "}
+                   
             <div className="flex justify-between items-center mb-4">
-                           {" "}
+                       
               <h2 className="text-xl font-bold text-gray-800">
-                                Recent Transactions              {" "}
+                Recent Transactions
               </h2>
-                           {" "}
+                   
               <div className="flex items-center gap-4">
-                               {" "}
+                       
                 <Link
                   href="/transactions"
                   className="text-blue-600 hover:text-blue-700 text-sm font-medium"
                 >
-                                    View All                {" "}
+                  View All
                 </Link>
-                               {" "}
                 <button
                   onClick={() => {
                     setEditingTransaction(null);
@@ -439,11 +438,9 @@ function DashboardContent() {
                   className="text-blue-600 hover:text-blue-700 text-sm font-medium"
                   disabled={accounts.length === 0}
                 >
-                                    + Add Transaction           _    {" "}
+                  + Add Transaction
                 </button>
-                             {" "}
               </div>
-                         {" "}
             </div>
             {transactions.length === 0 ? (
               <p className="text-gray-500 text-center py-8">
