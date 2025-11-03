@@ -35,6 +35,16 @@ export interface Transaction {
   category_id: number | null;
 }
 
+export interface Budget {
+  id: number;
+  amount: number;
+  period: string;
+  user_id: number;
+  category_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
 // ============================================================================
 // API SERVICE CLASS
 // ============================================================================
@@ -262,6 +272,55 @@ class ApiService {
 
   async deleteCategory(categoryId: number, token: string): Promise<void> {
     await this.fetchWithAuth(`/categories/${categoryId}`, token, {
+      method: 'DELETE',
+    });
+  }
+
+  // ============================================================================
+  // BUDGET ENDPOINTS
+  // ============================================================================
+
+  async getBudgets(userId: number, token: string): Promise<Budget[]> {
+    return this.fetchWithAuth(`/users/${userId}/budgets/`, token);
+  }
+
+  async getBudget(userId: number, budgetId: number, token: string): Promise<Budget> {
+    return this.fetchWithAuth(`/users/${userId}/budgets/${budgetId}`, token);
+  }
+
+  async createBudget(
+    userId: number,
+    data: {
+      amount: number;
+      period?: string;
+      category_id: number;
+    },
+    token: string
+  ): Promise<Budget> {
+    return this.fetchWithAuth(`/users/${userId}/budgets/`, token, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateBudget(
+    userId: number,
+    budgetId: number,
+    data: Partial<{
+      amount: number;
+      period: string;
+      category_id: number;
+    }>,
+    token: string
+  ): Promise<Budget> {
+    return this.fetchWithAuth(`/users/${userId}/budgets/${budgetId}`, token, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteBudget(userId: number, budgetId: number, token: string): Promise<void> {
+    await this.fetchWithAuth(`/users/${userId}/budgets/${budgetId}`, token, {
       method: 'DELETE',
     });
   }

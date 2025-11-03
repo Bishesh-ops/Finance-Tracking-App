@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 
 from . import models, schemas
 from typing import Optional, List
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -234,4 +234,57 @@ def delete_transaction(db: Session, db_transaction: models.Transaction):
     reverse_type = "expense" if db_transaction.type == "income" else "income"
     _adjust_account_balance(db, db_transaction.account_id, db_transaction.amount, reverse_type)
     db.delete(db_transaction)
+    db.commit()
+
+
+#----Budget Crud Functions-------
+
+def create_budget(db: Session, budget: schemas.BudgetCreate, user_id: int):
+    # Check if budget already exists for this user and category
+    existing_budget = db.query(models.Budget).filter(
+        models.Budget.user_id == user_id,
+        models.Budget.category_id == budget.category_id
+    ).first()
+
+    if existing_budget:
+        return None  # Indicate budget already exists
+
+    db_budget = models.Budget(
+        amount=budget.amount,
+        period=budget.period,
+        user_id=user_id,
+        category_id=budget.category_id
+    )
+    db.add(db_budget)
+    db.commit()
+    db.refresh(db_budget)
+    return db_budget
+
+def get_budget(db: Session, budget_id: int, user_id: Optional[int] = None):
+    query = db.query(models.Budget).filter(models.Budget.id == budget_id)
+    if user_id:  # If user_id is provided, ensure budget belongs to this user
+        query = query.filter(models.Budget.user_id == user_id)
+    return query.first()
+
+def get_budgets(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db.query(models.Budget).filter(
+        models.Budget.user_id == user_id
+    ).offset(skip).limit(limit).all()
+
+def update_budget(db: Session, db_budget: models.Budget, budget_update: schemas.BudgetUpdate):
+    update_data = budget_update.model_dump(exclude_unset=True)
+
+    # Update updated_at timestamp
+    db_budget.updated_at = datetime.now(timezone.utc)
+
+    for key, value in update_data.items():
+        setattr(db_budget, key, value)
+
+    db.add(db_budget)
+    db.commit()
+    db.refresh(db_budget)
+    return db_budget
+
+def delete_budget(db: Session, db_budget: models.Budget):
+    db.delete(db_budget)
     db.commit()

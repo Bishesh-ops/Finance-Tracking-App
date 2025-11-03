@@ -4,11 +4,12 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { api } from "@/services/api";
-import type { Account, Transaction, Category } from "@/services/api";
+import type { Account, Transaction, Category, Budget } from "@/services/api";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AccountModal from "@/components/AccountModal";
 import TransactionModal from "@/components/TransactionModal";
 import CategoryModal from "@/components/CategoryModal";
+import BudgetModal from "@/components/BudgetModal";
 import Link from "next/link";
 
 function StatCard({
@@ -23,21 +24,21 @@ function StatCard({
   color?: "blue" | "green" | "red" | "purple";
 }) {
   const colorClasses = {
-    blue: "bg-blue-50 text-blue-600 border-blue-200",
-    green: "bg-green-50 text-green-600 border-green-200",
-    red: "bg-red-50 text-red-600 border-red-200",
-    purple: "bg-purple-50 text-purple-600 border-purple-200",
+    blue: "from-blue-500 to-cyan-400",
+    green: "from-green-500 to-emerald-400",
+    red: "from-red-500 to-pink-400",
+    purple: "from-purple-500 to-indigo-400",
   }[color];
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-gray-600 text-sm font-medium">{title}</span>
-        <span className={`text-2xl p-2 rounded-lg border ${colorClasses}`}>
+    <div className="glass rounded-2xl p-6 hover:scale-105 transition-all duration-300 hover:shadow-2xl group animate-fade-in">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-gray-700 text-sm font-semibold tracking-wide uppercase">{title}</span>
+        <div className={`text-3xl p-3 rounded-xl bg-gradient-to-br ${colorClasses} shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
           {icon}
-        </span>
+        </div>
       </div>
-      <p className="text-3xl font-bold text-gray-800">{value}</p>
+      <p className="text-4xl font-bold bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent">{value}</p>
     </div>
   );
 }
@@ -52,25 +53,36 @@ function AccountCard({
   onDelete: (id: number) => void;
 }) {
   return (
-    <div className="bg-white rounded-lg shadow-md p-5 border border-gray-200 hover:border-blue-400 transition">
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="font-semibold text-gray-800 text-lg">{account.name}</h3>
-        <div className="flex gap-2">
+    <div className="glass rounded-xl p-5 hover:scale-[1.02] transition-all duration-300 hover:shadow-xl group border border-white/20">
+      <div className="flex justify-between items-start mb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg">
+            💳
+          </div>
+          <h3 className="font-bold text-gray-800 text-lg">{account.name}</h3>
+        </div>
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
             onClick={() => onEdit(account)}
-            className="text-blue-600 hover:text-blue-700 text-sm"
+            className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
+            title="Edit account"
           >
-            ✏️
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
           </button>
           <button
             onClick={() => onDelete(account.id)}
-            className="text-red-600 hover:text-red-700 text-sm"
+            className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600"
+            title="Delete account"
           >
-            🗑️
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
           </button>
         </div>
       </div>
-      <p className="text-2xl font-bold text-gray-900">
+      <p className="text-3xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
         ${account.balance.toFixed(2)}
       </p>
     </div>
@@ -92,49 +104,57 @@ function TransactionRow({
   const isIncome = transaction.type === "income";
 
   return (
-    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
-      <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between py-4 px-3 rounded-xl hover:bg-white/40 transition-all duration-200 group">
+      <div className="flex items-center gap-4">
         <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${
-            isIncome ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
+          className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-md transform group-hover:scale-110 transition-transform duration-200 ${
+            isIncome
+              ? "bg-gradient-to-br from-green-400 to-emerald-500"
+              : "bg-gradient-to-br from-red-400 to-pink-500"
           }`}
         >
           {isIncome ? "↑" : "↓"}
         </div>
         <div>
-          <p className="font-medium text-gray-800">
+          <p className="font-semibold text-gray-900 text-base">
             {transaction.description || "No description"}
           </p>
-          <p className="text-sm text-gray-500">
-            {category?.name || "Uncategorized"}
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200/60 text-gray-700 font-medium">
+              {category?.name || "Uncategorized"}
+            </span>
+            <span className="text-xs text-gray-500">
+              {new Date(transaction.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </span>
+          </div>
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <div className="text-right">
-          <p
-            className={`font-semibold ${
-              isIncome ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {isIncome ? "+" : "-"}${Math.abs(transaction.amount).toFixed(2)}
-          </p>
-          <p className="text-xs text-gray-500">
-            {new Date(transaction.date).toLocaleDateString()}
-          </p>
-        </div>
-        <div className="flex gap-2">
+        <p
+          className={`font-bold text-xl ${
+            isIncome ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {isIncome ? "+" : "-"}${Math.abs(transaction.amount).toFixed(2)}
+        </p>
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
             onClick={() => onEdit(transaction)}
-            className="text-blue-600 hover:text-blue-700 text-sm"
+            className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
+            title="Edit transaction"
           >
-            ✏️
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
           </button>
           <button
             onClick={() => onDelete(transaction.id)}
-            className="text-red-600 hover:text-red-700 text-sm"
+            className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600"
+            title="Delete transaction"
           >
-            🗑️
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
           </button>
         </div>
       </div>
@@ -147,6 +167,7 @@ function DashboardContent() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [budgets, setBudgets] = useState<Budget[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -154,10 +175,12 @@ function DashboardContent() {
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const [transactionModalOpen, setTransactionModalOpen] = useState(false);
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [budgetModalOpen, setBudgetModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
 
   useEffect(() => {
@@ -171,7 +194,7 @@ function DashboardContent() {
       setLoading(true);
       setError("");
 
-      const [accountsData, transactionsData, categoriesData] =
+      const [accountsData, transactionsData, categoriesData, budgetsData] =
         await Promise.all([
           api.getAccounts(user.id, token),
           api.getTransactions(user.id, token, {
@@ -180,11 +203,13 @@ function DashboardContent() {
             order: "desc",
           }),
           api.getCategories(token),
+          api.getBudgets(user.id, token),
         ]);
 
       setAccounts(accountsData);
       setTransactions(transactionsData);
       setCategories(categoriesData);
+      setBudgets(budgetsData);
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "An error occurred";
@@ -300,6 +325,50 @@ function DashboardContent() {
       await loadDashboardData();
     } catch {
       alert("Failed to delete category");
+    }
+  };
+
+  // Budget handlers
+  const handleSaveBudget = async (
+    amount: number,
+    categoryId: number,
+    period?: string
+  ) => {
+    if (!user || !token) return;
+    setModalLoading(true);
+
+    try {
+      if (editingBudget) {
+        await api.updateBudget(
+          user.id,
+          editingBudget.id,
+          { amount, period },
+          token
+        );
+      } else {
+        await api.createBudget(
+          user.id,
+          { amount, category_id: categoryId, period },
+          token
+        );
+      }
+      await loadDashboardData();
+      setEditingBudget(null);
+    } catch {
+      throw new Error("Failed to save budget");
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  const handleDeleteBudget = async (id: number) => {
+    if (!user || !token || !confirm("Delete this budget?")) return;
+
+    try {
+      await api.deleteBudget(user.id, id, token);
+      await loadDashboardData();
+    } catch {
+      alert("Failed to delete budget");
     }
   };
 
@@ -465,7 +534,7 @@ function DashboardContent() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-gray-800">Categories</h2>
             <button
@@ -514,6 +583,99 @@ function DashboardContent() {
             })}
           </div>
         </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-gray-800">Monthly Budgets</h2>
+            <button
+              onClick={() => {
+                setEditingBudget(null);
+                setBudgetModalOpen(true);
+              }}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              disabled={categories.filter((c) => c.type === "expense" || c.type === "both").length === 0}
+            >
+              + Add Budget
+            </button>
+          </div>
+          {budgets.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">
+              No budgets set yet. Create budgets to track spending limits!
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {budgets.map((budget) => {
+                const category = categories.find((c) => c.id === budget.category_id);
+                // Calculate spending for this category
+                const spent = transactions
+                  .filter((t) => t.type === "expense" && t.category_id === budget.category_id)
+                  .reduce((sum, t) => sum + t.amount, 0);
+                const percentage = (spent / budget.amount) * 100;
+                const isOverBudget = spent > budget.amount;
+
+                return (
+                  <div
+                    key={budget.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:border-blue-400 transition"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-semibold text-gray-800">
+                          {category?.name || "Unknown Category"}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          ${spent.toFixed(2)} of ${budget.amount.toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingBudget(budget);
+                            setBudgetModalOpen(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-700 text-sm"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          onClick={() => handleDeleteBudget(budget.id)}
+                          className="text-red-600 hover:text-red-700 text-sm"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                      <div
+                        className={`h-2.5 rounded-full transition-all ${
+                          isOverBudget
+                            ? "bg-red-600"
+                            : percentage > 80
+                            ? "bg-yellow-500"
+                            : "bg-green-500"
+                        }`}
+                        style={{ width: `${Math.min(percentage, 100)}%` }}
+                      ></div>
+                    </div>
+                    <p
+                      className={`text-xs font-medium ${
+                        isOverBudget
+                          ? "text-red-600"
+                          : percentage > 80
+                          ? "text-yellow-600"
+                          : "text-green-600"
+                      }`}
+                    >
+                      {isOverBudget
+                        ? `Over budget by $${(spent - budget.amount).toFixed(2)}`
+                        : `${(100 - percentage).toFixed(0)}% remaining`}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </main>
 
       <AccountModal
@@ -548,6 +710,18 @@ function DashboardContent() {
         }}
         onSave={handleSaveCategory}
         category={editingCategory}
+        isLoading={modalLoading}
+      />
+
+      <BudgetModal
+        isOpen={budgetModalOpen}
+        onClose={() => {
+          setBudgetModalOpen(false);
+          setEditingBudget(null);
+        }}
+        onSave={handleSaveBudget}
+        budget={editingBudget}
+        categories={categories}
         isLoading={modalLoading}
       />
     </div>

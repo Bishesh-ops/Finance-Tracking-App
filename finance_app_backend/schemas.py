@@ -78,6 +78,28 @@ class Transaction(TransactionBase):
 
     model_config = ConfigDict(from_attributes=True) # <-- Updated syntax!
 
+#--- Budget Schemas ---
+class BudgetBase(BaseModel):
+    amount: float
+    period: Optional[str] = "monthly"
+    category_id: int
+
+class BudgetCreate(BudgetBase):
+    pass
+
+class BudgetUpdate(BaseModel):
+    amount: Optional[float] = None
+    period: Optional[str] = None
+    category_id: Optional[int] = None
+
+class Budget(BudgetBase):
+    id: int
+    user_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
 # --- Authentication Schemas ---
 class Token(BaseModel):
     access_token: str

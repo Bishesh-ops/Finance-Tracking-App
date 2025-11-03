@@ -398,3 +398,116 @@ async def delete_transaction_api(
         raise HTTPException(status_code=404, detail="Transaction not found or does not belong to this user")
 
     crud.delete_transaction(db=db, db_transaction=db_transaction)
+
+
+# --- Budget Endpoints ---
+@app.post("/users/{user_id}/budgets/", response_model=schemas.Budget, status_code=status.HTTP_201_CREATED)
+async def create_budget_for_user_api(
+    user_id: int,
+    budget: schemas.BudgetCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+) -> schemas.Budget:
+    """
+    Creates a new budget for a specific user and category.
+    Authorization: User can only create budgets for themselves.
+    Note: Only one budget per user per category is allowed.
+    """
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to create budget for this user")
+
+    # Verify category exists
+    db_category = crud.get_category(db, category_id=budget.category_id)
+    if not db_category:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    # Create the budget
+    db_budget = crud.create_budget(db=db, budget=budget, user_id=user_id)
+    if db_budget is None:
+        raise HTTPException(status_code=400, detail="Budget already exists for this category")
+
+    return db_budget
+
+@app.get("/users/{user_id}/budgets/", response_model=List[schemas.Budget])
+async def read_user_budgets_api(
+    user_id: int,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+) -> List[schemas.Budget]:
+    """
+    Retrieves all budgets for a specific user with pagination.
+    Authorization: User can only retrieve their own budgets.
+    """
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to view budgets for this user")
+
+    budgets = crud.get_budgets(db, user_id=user_id, skip=skip, limit=limit)
+    return budgets
+
+@app.get("/users/{user_id}/budgets/{budget_id}", response_model=schemas.Budget)
+async def read_budget_api(
+    user_id: int,
+    budget_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+) -> schemas.Budget:
+    """
+    Retrieves a single budget by ID for a specific user.
+    Authorization: User can only retrieve their own budgets.
+    """
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to view this budget")
+
+    db_budget = crud.get_budget(db, budget_id=budget_id, user_id=user_id)
+    if db_budget is None:
+        raise HTTPException(status_code=404, detail="Budget not found or does not belong to this user")
+    return db_budget
+
+@app.put("/users/{user_id}/budgets/{budget_id}", response_model=schemas.Budget)
+async def update_budget_api(
+    user_id: int,
+    budget_id: int,
+    budget_update: schemas.BudgetUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+) -> schemas.Budget:
+    """
+    Updates an existing budget for a specific user.
+    Authorization: User can only update their own budgets.
+    """
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this budget")
+
+    db_budget = crud.get_budget(db, budget_id=budget_id, user_id=user_id)
+    if db_budget is None:
+        raise HTTPException(status_code=404, detail="Budget not found or does not belong to this user")
+
+    # If the category_id is being updated, verify the new category exists
+    if budget_update.category_id is not None:
+        new_category = crud.get_category(db, category_id=budget_update.category_id)
+        if not new_category:
+            raise HTTPException(status_code=400, detail="New category not found")
+
+    return crud.update_budget(db=db, db_budget=db_budget, budget_update=budget_update)
+
+@app.delete("/users/{user_id}/budgets/{budget_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_budget_api(
+    user_id: int,
+    budget_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    """
+    Deletes a budget for a specific user.
+    Authorization: User can only delete their own budgets.
+    """
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this budget")
+
+    db_budget = crud.get_budget(db, budget_id=budget_id, user_id=user_id)
+    if db_budget is None:
+        raise HTTPException(status_code=404, detail="Budget not found or does not belong to this user")
+
+    crud.delete_budget(db=db, db_budget=db_budget)

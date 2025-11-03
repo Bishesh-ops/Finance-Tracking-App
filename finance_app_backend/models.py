@@ -13,9 +13,10 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
 
-    # Relationships: a user can have multiple accounts and multiple transactions
+    # Relationships: a user can have multiple accounts, transactions, and budgets
     accounts = relationship("Account", back_populates="owner", cascade="all, delete-orphan")
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
+    budgets = relationship("Budget", back_populates="user", cascade="all, delete-orphan")
 
 class Account(Base):
     __tablename__ = "accounts"
@@ -36,6 +37,7 @@ class Category(Base):
     type = Column(String)  # "income", "expense", or "both"
 
     transactions = relationship("Transaction", back_populates="category")
+    budgets = relationship("Budget", back_populates="category")
 
 class Transaction(Base):
     __tablename__ = "transactions"
@@ -52,3 +54,17 @@ class Transaction(Base):
     user = relationship("User", back_populates="transactions")
     account = relationship("Account", back_populates="transactions")
     category = relationship("Category", back_populates="transactions")
+
+class Budget(Base):
+    __tablename__ = "budgets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    amount = Column(Float)  # Monthly budget limit
+    period = Column(String, default="monthly")  # For future: "weekly", "monthly", "yearly"
+    user_id = Column(Integer, ForeignKey("users.id"))
+    category_id = Column(Integer, ForeignKey("categories.id"))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = relationship("User", back_populates="budgets")
+    category = relationship("Category", back_populates="budgets")

@@ -3,7 +3,9 @@
     "allow": [
       "Bash(alembic revision:*)",
       "Bash(python -m alembic revision:*)",
-      "Bash(.venv/Scripts/alembic.exe:*)"
+      "Bash(.venv/Scripts/alembic.exe:*)",
+      "Bash(cat:*)",
+      "Bash(docker exec:*)"
     ],
     "deny": [],
     "ask": []
