@@ -1,3 +1,4 @@
+# I Used Claude to fix the default gray text issue in Tailwind :( Idk why I created a pull request from claude it shows Claude as a contributor :(((((. Hope this dosent take away from my work
 # Personal Finance Tracker Backend
 Project Overview
 This is a robust and secure backend service for a personal finance tracking application. It provides a comprehensive RESTful API for managing users, financial accounts, transaction categories, and all income/expense transactions.
