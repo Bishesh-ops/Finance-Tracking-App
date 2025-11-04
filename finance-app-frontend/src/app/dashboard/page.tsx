@@ -382,42 +382,55 @@ function DashboardContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <div className="absolute inset-0 border-4 border-purple-200 rounded-full"></div>
+            <div className="absolute inset-0 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <p className="text-white text-lg font-semibold">Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="min-h-screen">
+      <header className="glass sticky top-0 z-50 border-b border-white/20 shadow-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+            <div className="animate-slide-in">
+              <h1 className="text-3xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
                 Finance Tracker
               </h1>
-              <p className="text-sm text-gray-600">
-                Welcome back, {user?.username}!
+              <p className="text-sm text-gray-700 font-medium mt-1">
+                Welcome back, <span className="font-bold">{user?.username}</span>! 👋
               </p>
             </div>
             <button
               onClick={logout}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+              className="px-5 py-2.5 bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-300"
             >
-              Logout
+              <span className="flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+              </span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-            Error: {error}
+          <div className="glass border-2 border-red-300 bg-red-50/90 text-red-800 px-6 py-4 rounded-2xl mb-6 animate-scale-in">
+            <div className="flex items-center gap-3">
+              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="font-semibold">Error: {error}</span>
+            </div>
           </div>
         )}
 
@@ -449,23 +462,25 @@ function DashboardContent() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800">My Accounts</h2>
+          <div className="glass rounded-2xl p-6 hover:shadow-2xl transition-all duration-300">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">My Accounts</h2>
               <button
                 onClick={() => {
                   setEditingAccount(null);
                   setAccountModalOpen(true);
                 }}
-                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-300 text-sm"
               >
                 + Add Account
               </button>
             </div>
             {accounts.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">
-                No accounts yet. Create your first account!
-              </p>
+              <div className="text-center py-16">
+                <div className="text-6xl mb-4">💳</div>
+                <p className="text-gray-600 font-medium">No accounts yet</p>
+                <p className="text-gray-500 text-sm mt-1">Create your first account to get started!</p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {accounts.map((account) => (
@@ -483,11 +498,11 @@ function DashboardContent() {
             )}
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+          <div className="glass rounded-2xl p-6 hover:shadow-2xl transition-all duration-300">
                    
             <div className="flex justify-between items-center mb-4">
                        
-              <h2 className="text-xl font-bold text-gray-800">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 Recent Transactions
               </h2>
                    
@@ -495,7 +510,7 @@ function DashboardContent() {
                        
                 <Link
                   href="/transactions"
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-300 text-sm"
                 >
                   View All
                 </Link>
@@ -504,7 +519,7 @@ function DashboardContent() {
                     setEditingTransaction(null);
                     setTransactionModalOpen(true);
                   }}
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-300 text-sm"
                   disabled={accounts.length === 0}
                 >
                   + Add Transaction
@@ -534,24 +549,26 @@ function DashboardContent() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
+        <div className="glass rounded-2xl p-6 hover:shadow-2xl transition-all duration-300 mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Categories</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Categories</h2>
             <button
               onClick={() => {
                 setEditingCategory(null);
                 setCategoryModalOpen(true);
               }}
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-300 text-sm"
             >
               + Add Category
             </button>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {categories.map((category) => {
-              const typeColor = category.type === 'income' ? 'bg-green-100 text-green-800' :
-                                category.type === 'expense' ? 'bg-red-100 text-red-800' :
-                                'bg-blue-100 text-blue-800';
+              const typeGradient = category.type === 'income'
+                ? 'from-green-400 to-emerald-500'
+                : category.type === 'expense'
+                ? 'from-red-400 to-pink-500'
+                : 'from-blue-400 to-cyan-500';
               const typeLabel = category.type === 'income' ? '📈' :
                                category.type === 'expense' ? '📉' :
                                '↔️';
@@ -559,22 +576,26 @@ function DashboardContent() {
               return (
                 <div
                   key={category.id}
-                  className={`${typeColor} px-4 py-2 rounded-full flex items-center gap-2`}
+                  className={`bg-gradient-to-r ${typeGradient} text-white px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-lg hover:scale-105 transition-all duration-300 group`}
                 >
-                  <span className="text-sm">{typeLabel}</span>
-                  <span>{category.name}</span>
+                  <span className="text-lg">{typeLabel}</span>
+                  <span className="font-semibold">{category.name}</span>
                   <button
                     onClick={() => {
                       setEditingCategory(category);
                       setCategoryModalOpen(true);
                     }}
-                    className="hover:opacity-70 text-xs"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-white/20 rounded"
+                    title="Edit category"
                   >
-                    ✏️
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
                   </button>
                   <button
                     onClick={() => handleDeleteCategory(category.id)}
-                    className="hover:opacity-70 text-xs"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-white/20 rounded text-lg font-bold"
+                    title="Delete category"
                   >
                     ×
                   </button>
@@ -584,26 +605,28 @@ function DashboardContent() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div className="glass rounded-2xl p-6 hover:shadow-2xl transition-all duration-300">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Monthly Budgets</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Monthly Budgets</h2>
             <button
               onClick={() => {
                 setEditingBudget(null);
                 setBudgetModalOpen(true);
               }}
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-300 text-sm"
               disabled={categories.filter((c) => c.type === "expense" || c.type === "both").length === 0}
             >
               + Add Budget
             </button>
           </div>
           {budgets.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">
-              No budgets set yet. Create budgets to track spending limits!
-            </p>
+            <div className="text-center py-16">
+              <div className="text-6xl mb-4">💰</div>
+              <p className="text-gray-600 font-medium">No budgets set yet</p>
+              <p className="text-gray-500 text-sm mt-1">Create budgets to track spending limits!</p>
+            </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {budgets.map((budget) => {
                 const category = categories.find((c) => c.id === budget.category_id);
                 // Calculate spending for this category
@@ -616,60 +639,74 @@ function DashboardContent() {
                 return (
                   <div
                     key={budget.id}
-                    className="border border-gray-200 rounded-lg p-4 hover:border-blue-400 transition"
+                    className="glass rounded-xl p-5 hover:scale-[1.01] transition-all duration-300 border border-white/20 group"
                   >
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-semibold text-gray-800">
-                          {category?.name || "Unknown Category"}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          ${spent.toFixed(2)} of ${budget.amount.toFixed(2)}
-                        </p>
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-2xl shadow-lg">
+                          💵
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900 text-lg">
+                            {category?.name || "Unknown Category"}
+                          </h3>
+                          <p className="text-sm text-gray-600 font-medium">
+                            <span className="font-bold text-purple-600">${spent.toFixed(2)}</span> of ${budget.amount.toFixed(2)}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <button
                           onClick={() => {
                             setEditingBudget(budget);
                             setBudgetModalOpen(true);
                           }}
-                          className="text-blue-600 hover:text-blue-700 text-sm"
+                          className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
+                          title="Edit budget"
                         >
-                          ✏️
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
                         </button>
                         <button
                           onClick={() => handleDeleteBudget(budget.id)}
-                          className="text-red-600 hover:text-red-700 text-sm"
+                          className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600"
+                          title="Delete budget"
                         >
-                          🗑️
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
                         </button>
                       </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                    <div className="w-full bg-gray-300/40 rounded-full h-3 mb-2 overflow-hidden shadow-inner">
                       <div
-                        className={`h-2.5 rounded-full transition-all ${
+                        className={`h-3 rounded-full transition-all duration-500 shadow-lg ${
                           isOverBudget
-                            ? "bg-red-600"
+                            ? "bg-gradient-to-r from-red-500 to-pink-500"
                             : percentage > 80
-                            ? "bg-yellow-500"
-                            : "bg-green-500"
+                            ? "bg-gradient-to-r from-yellow-400 to-orange-500"
+                            : "bg-gradient-to-r from-green-400 to-emerald-500"
                         }`}
                         style={{ width: `${Math.min(percentage, 100)}%` }}
                       ></div>
                     </div>
-                    <p
-                      className={`text-xs font-medium ${
-                        isOverBudget
-                          ? "text-red-600"
-                          : percentage > 80
-                          ? "text-yellow-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      {isOverBudget
-                        ? `Over budget by $${(spent - budget.amount).toFixed(2)}`
-                        : `${(100 - percentage).toFixed(0)}% remaining`}
-                    </p>
+                    <div className="flex justify-between items-center">
+                      <p
+                        className={`text-sm font-bold ${
+                          isOverBudget
+                            ? "text-red-600"
+                            : percentage > 80
+                            ? "text-yellow-600"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {isOverBudget
+                          ? `⚠️ Over by $${(spent - budget.amount).toFixed(2)}`
+                          : `✓ ${(100 - percentage).toFixed(0)}% remaining`}
+                      </p>
+                      <span className="text-xs text-gray-500 font-medium">{percentage.toFixed(1)}% used</span>
+                    </div>
                   </div>
                 );
               })}
