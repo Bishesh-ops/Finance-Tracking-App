@@ -46,18 +46,18 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="glass rounded-3xl p-10 shadow-2xl w-full max-w-md animate-scale-in border-2 border-white/30">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="glass rounded-2xl p-10 shadow-lg w-full max-w-md animate-scale-in">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-xl mb-4 animate-fade-in">
-            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-blue-500 shadow-md mb-4 animate-fade-in">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
             Welcome Back
           </h1>
-          <p className="text-gray-700 font-medium">Login to your account</p>
+          <p className="text-gray-600 font-medium">Login to your account</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-5">
@@ -76,7 +76,7 @@ export default function LoginPage() {
               onChange={(e) => setUsername(e.target.value)}
               required
               disabled={isLoading}
-              className="w-full px-5 py-3.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100 text-gray-900 font-medium transition-all duration-200 hover:border-purple-300 bg-white/90"
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 text-gray-900 transition-all duration-200 hover:border-blue-400 bg-white"
             />
           </div>
 
@@ -95,14 +95,14 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={isLoading}
-              className="w-full px-5 py-3.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100 text-gray-900 font-medium transition-all duration-200 hover:border-purple-300 bg-white/90"
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 text-gray-900 transition-all duration-200 hover:border-blue-400 bg-white"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white py-4 rounded-xl font-bold text-lg hover:scale-105 hover:shadow-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 mt-6"
+            className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold text-base hover:bg-blue-600 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500 mt-6"
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
@@ -131,11 +131,11 @@ export default function LoginPage() {
         )}
 
         <div className="mt-8 text-center">
-          <p className="text-gray-700 font-medium">
+          <p className="text-gray-600 font-medium">
             Don&#39;t have an account?{" "}
             <Link
               href="/"
-              className="font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent hover:scale-105 inline-block transition-transform duration-200"
+              className="font-bold text-blue-500 hover:text-blue-600 transition-colors duration-200"
             >
               Register here
             </Link>

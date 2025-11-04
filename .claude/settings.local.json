@@ -5,7 +5,9 @@
       "Bash(python -m alembic revision:*)",
       "Bash(.venv/Scripts/alembic.exe:*)",
       "Bash(cat:*)",
-      "Bash(docker exec:*)"
+      "Bash(docker exec:*)",
+      "Bash(dir)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

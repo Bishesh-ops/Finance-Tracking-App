@@ -156,7 +156,7 @@ function TransactionsContent() {
             <div className="absolute inset-0 border-4 border-purple-200 rounded-full"></div>
             <div className="absolute inset-0 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
-          <p className="text-white text-lg font-semibold">Loading transactions...</p>
+          <p className="text-gray-900 text-lg font-semibold">Loading transactions...</p>
         </div>
       </div>
     );
@@ -164,26 +164,26 @@ function TransactionsContent() {
 
   return (
     <div className="min-h-screen">
-      <header className="glass sticky top-0 z-50 border-b border-white/20 shadow-xl">
+      <header className="glass sticky top-0 z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
               <Link
                 href="/dashboard"
-                className="p-2 rounded-xl hover:bg-white/30 text-gray-800 font-bold transition-all duration-200 flex items-center gap-2"
+                className="p-2 rounded-lg hover:bg-white/30 text-gray-800 font-bold transition-all duration-200 flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
                 Back
               </Link>
-              <h1 className="text-3xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-extrabold text-gray-900">
                 All Transactions
               </h1>
             </div>
             <button
               onClick={logout}
-              className="px-5 py-2.5 bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-300"
+              className="px-5 py-2.5 bg-rose-500 text-white font-semibold rounded-lg hover:bg-rose-600 hover:shadow-md transition-all duration-200"
             >
               <span className="flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,7 +200,7 @@ function TransactionsContent() {
         {error && (
           <div className="glass border-2 border-red-300 bg-red-50/90 text-red-800 px-6 py-4 rounded-2xl mb-6 animate-scale-in">
             <div className="flex items-center gap-3">
-              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span className="font-semibold">Error: {error}</span>
@@ -213,32 +213,32 @@ function TransactionsContent() {
           <div className="glass rounded-2xl p-6 hover:scale-105 transition-all duration-300 hover:shadow-2xl group animate-fade-in">
             <div className="flex items-center justify-between mb-3">
               <span className="text-gray-700 text-sm font-semibold tracking-wide uppercase">Total Income</span>
-              <div className="text-3xl p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-400 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+              <div className="text-3xl p-3 rounded-lg bg-emerald-500 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
                 📈
               </div>
             </div>
-            <p className="text-4xl font-bold text-green-600">
+            <p className="text-4xl font-bold text-emerald-600">
               ${totalIncome.toFixed(2)}
             </p>
           </div>
           <div className="glass rounded-2xl p-6 hover:scale-105 transition-all duration-300 hover:shadow-2xl group animate-fade-in">
             <div className="flex items-center justify-between mb-3">
               <span className="text-gray-700 text-sm font-semibold tracking-wide uppercase">Total Expenses</span>
-              <div className="text-3xl p-3 rounded-xl bg-gradient-to-br from-red-500 to-pink-400 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+              <div className="text-3xl p-3 rounded-lg bg-rose-500 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
                 📉
               </div>
             </div>
-            <p className="text-4xl font-bold text-red-600">
+            <p className="text-4xl font-bold text-rose-600">
               ${totalExpenses.toFixed(2)}
             </p>
           </div>
           <div className="glass rounded-2xl p-6 hover:scale-105 transition-all duration-300 hover:shadow-2xl group animate-fade-in">
             <div className="flex items-center justify-between mb-3">
               <span className="text-gray-700 text-sm font-semibold tracking-wide uppercase">Net</span>
-              <div className={`text-3xl p-3 rounded-xl shadow-lg transform group-hover:scale-110 transition-transform duration-300 ${
+              <div className={`text-3xl p-3 rounded-lg shadow-lg transform group-hover:scale-110 transition-transform duration-300 ${
                 totalIncome - totalExpenses >= 0
-                  ? "bg-gradient-to-br from-blue-500 to-cyan-400"
-                  : "bg-gradient-to-br from-orange-500 to-red-400"
+                  ? "bg-blue-500"
+                  : "bg-orange-500"
               }`}>
                 💰
               </div>
@@ -246,8 +246,8 @@ function TransactionsContent() {
             <p
               className={`text-4xl font-bold ${
                 totalIncome - totalExpenses >= 0
-                  ? "text-green-600"
-                  : "text-red-600"
+                  ? "text-emerald-600"
+                  : "text-rose-600"
               }`}
             >
               ${(totalIncome - totalExpenses).toFixed(2)}
@@ -257,7 +257,7 @@ function TransactionsContent() {
 
         {/* Filters */}
         <div className="glass rounded-2xl p-6 mb-6 hover:shadow-2xl transition-all duration-300">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
             Filters & Search
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -268,7 +268,7 @@ function TransactionsContent() {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900 font-medium transition-all duration-200 hover:border-purple-300 bg-white/90"
+                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium transition-all duration-200 hover:border-blue-400 bg-white"
               >
                 <option value="all">All</option>
                 <option value="income">Income</option>
@@ -283,7 +283,7 @@ function TransactionsContent() {
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900 font-medium transition-all duration-200 hover:border-purple-300 bg-white/90"
+                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium transition-all duration-200 hover:border-blue-400 bg-white"
               >
                 <option value="all">All</option>
                 {categories.map((cat) => (
@@ -301,7 +301,7 @@ function TransactionsContent() {
               <select
                 value={filterAccount}
                 onChange={(e) => setFilterAccount(e.target.value)}
-                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900 font-medium transition-all duration-200 hover:border-purple-300 bg-white/90"
+                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium transition-all duration-200 hover:border-blue-400 bg-white"
               >
                 <option value="all">All</option>
                 {accounts.map((acc) => (
@@ -320,7 +320,7 @@ function TransactionsContent() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900 font-medium transition-all duration-200 hover:border-purple-300 bg-white/90"
+                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium transition-all duration-200 hover:border-blue-400 bg-white"
               />
             </div>
 
@@ -332,7 +332,7 @@ function TransactionsContent() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900 font-medium transition-all duration-200 hover:border-purple-300 bg-white/90"
+                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium transition-all duration-200 hover:border-blue-400 bg-white"
               />
             </div>
 
@@ -346,7 +346,7 @@ function TransactionsContent() {
                   onChange={(e) =>
                     setSortBy(e.target.value as "date" | "amount")
                   }
-                  className="flex-1 px-4 py-2.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900 font-medium transition-all duration-200 hover:border-purple-300 bg-white/90"
+                  className="flex-1 px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium transition-all duration-200 hover:border-blue-400 bg-white"
                 >
                   <option value="date">Date</option>
                   <option value="amount">Amount</option>
@@ -355,7 +355,7 @@ function TransactionsContent() {
                   onClick={() =>
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc")
                   }
-                  className="px-4 py-2.5 border-2 border-gray-300 rounded-xl hover:bg-purple-100 hover:border-purple-400 text-gray-900 font-bold transition-all duration-200 bg-white/90"
+                  className="px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:bg-purple-100 hover:border-purple-400 text-gray-900 font-bold transition-all duration-200 bg-white/90"
                 >
                   {sortOrder === "asc" ? "↑" : "↓"}
                 </button>
@@ -374,7 +374,7 @@ function TransactionsContent() {
                 setSortBy("date");
                 setSortOrder("desc");
               }}
-              className="px-5 py-2.5 rounded-xl text-purple-700 font-semibold hover:bg-purple-100 transition-all duration-200"
+              className="px-5 py-2.5 rounded-lg text-purple-700 font-semibold hover:bg-purple-100 transition-all duration-200"
             >
               Clear Filters
             </button>
@@ -383,7 +383,7 @@ function TransactionsContent() {
                 setEditingTransaction(null);
                 setTransactionModalOpen(true);
               }}
-              className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-300"
+              className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-lg hover:bg-rose-600 hover:shadow-md transition-all duration-200"
               disabled={accounts.length === 0}
             >
               + New Transaction
@@ -444,8 +444,8 @@ function TransactionsContent() {
                       <td
                         className={`px-6 py-4 whitespace-nowrap text-sm font-bold text-right ${
                           txn.type === "income"
-                            ? "text-green-600"
-                            : "text-red-600"
+                            ? "text-emerald-600"
+                            : "text-rose-600"
                         }`}
                       >
                         {txn.type === "income" ? "+" : "-"}$
@@ -467,7 +467,7 @@ function TransactionsContent() {
                           </button>
                           <button
                             onClick={() => handleDeleteTransaction(txn.id)}
-                            className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600"
+                            className="p-2 hover:bg-red-100 rounded-lg transition-colors text-rose-600"
                             title="Delete transaction"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
